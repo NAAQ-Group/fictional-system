@@ -12,6 +12,27 @@ from features.cqt_features import cqt_features
 # Create output directory if it doesn't exist
 
 def process_file(input_file_path, input_folder, output_folder, mode="melspectrogram"):
+    """
+    parameters:
+    input_file_path (str): Path to the input audio file.
+    input_folder (str): Root folder containing the input audio files.
+    output_folder (str): Root folder where the output files will be saved.
+    mode (str): The type of feature extraction to perform. Options are:
+        - "melspectrogram"
+        - "gammatonegram"
+        - "mfcc"
+        - "stft"
+        - "wst"
+        - "cqt"
+
+    returns:
+    None
+
+    This function processes a single audio file and saves the extracted features to the output folder.
+    It creates the necessary directory structure in the output folder to mirror the input folder structure.
+    If the input file is not a valid audio file or if an error occurs during processing,
+    it will print an error message but continue processing other files.
+    """
     try:
         # Create the equivalent output path
         relative_path = os.path.relpath(os.path.dirname(input_file_path), input_folder)
@@ -42,6 +63,22 @@ def process_file(input_file_path, input_folder, output_folder, mode="melspectrog
         print(f"Failed to process {input_file_path}: {e}")
 
 def process_dataset_parallel(input_folder, output_folder, max_workers=8):
+    """
+    parameters:
+    input_folder (str): Root folder containing the input audio files.
+    output_folder (str): Root folder where the output files will be saved.
+    max_workers (int): Maximum number of threads to use for parallel processing.
+
+    returns:
+    None
+
+    This function processes all audio files in the input folder in parallel using multiple threads.
+    It searches for all `.wav` files in the input folder and its subdirectories,
+    processes each file to extract features, and saves the results in the output folder.
+    The output folder structure mirrors the input folder structure.
+    If an error occurs while processing a file, it will print an error message but continue processing
+    other files.
+    """
     wav_files = []
     for root, _, files in os.walk(input_folder):
         for file_name in files:
@@ -53,7 +90,18 @@ def process_dataset_parallel(input_folder, output_folder, max_workers=8):
         for _ in as_completed(futures):
             pass  # Results are printed inside process_file
 
-def process_dataset_sequential(input_folder, output_folder, max_workers=8):
+def process_dataset_sequential(input_folder, output_folder):
+    """
+    parameters:
+    input_folder (str): Root folder containing the input audio files.
+    output_folder (str): Root folder where the output files will be saved.
+
+    returns:
+    None
+
+    This function processes all audio files in the input folder sequentially.
+    It creates the necessary directory structure in the output folder to mirror the input folder structure.
+    """
     wav_files = []
     for root, _, files in os.walk(input_folder):
         for file_name in files:

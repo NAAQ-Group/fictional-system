@@ -6,13 +6,24 @@ from nnAudio2 import Spectrogram
 
 def gammatonegram(input_file_path):
     """
-    Generate a Gammatonegram from an audio file.
-
-    Parameters:
+    parameters:
     input_file_path (str): Path to the input audio file.
 
-    Returns:
+    returns:
     np.ndarray: Gammatonegram representation of the audio.
+
+    This function computes the Gammatonegram of an audio file using the nnAudio2 library.
+    It loads the audio file, computes the Gammatonegram with specified parameters,
+    and returns the result as a NumPy array. The Gammatonegram is a time
+    frequency representation that is particularly useful for analyzing audio signals.
+    The function uses a sampling rate of the audio file, a window size of 1024
+    samples, 95 frequency bins, and a hop length of 256 samples.
+    The Gammatonegram is computed with a minimum frequency of 18 Hz and a maximum
+    frequency set to None, which means it will use the Nyquist frequency.
+    The output is normalized and converted to a NumPy array for consistency.
+    The function is designed to run on CPU, ensuring compatibility with systems
+    that do not have CUDA support.
+    If an error occurs during processing, it will print an error message and return None.
     """
     try:
         # Load the audio file

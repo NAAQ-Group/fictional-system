@@ -41,7 +41,7 @@ def process_file(input_file_path, input_folder, output_folder, mode="melspectrog
     except Exception as e:
         print(f"Failed to process {input_file_path}: {e}")
 
-def process_dataset_mel(input_folder, output_folder, max_workers=8):
+def process_dataset_parallel(input_folder, output_folder, max_workers=8):
     wav_files = []
     for root, _, files in os.walk(input_folder):
         for file_name in files:
@@ -52,3 +52,13 @@ def process_dataset_mel(input_folder, output_folder, max_workers=8):
         futures = [executor.submit(process_file, f, input_folder, output_folder) for f in wav_files]
         for _ in as_completed(futures):
             pass  # Results are printed inside process_file
+
+def process_dataset_sequential(input_folder, output_folder, max_workers=8):
+    wav_files = []
+    for root, _, files in os.walk(input_folder):
+        for file_name in files:
+            if file_name.endswith('.wav'):
+                wav_files.append(os.path.join(root, file_name))
+
+    for wav_file in wav_files:
+        process_file(wav_file, input_folder, output_folder)

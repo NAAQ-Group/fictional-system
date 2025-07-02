@@ -3,10 +3,15 @@ import numpy as np
 import librosa
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from features.melspectrogram import melspectrogram
+from features.gammatonegram import gammatonegram
+from features.mfcc_features import extract_mfcc_1d
+from features.stft_features import stft_features
+from features.wst_features import wst_features
+from features.cqt_features import cqt_features
 
 # Create output directory if it doesn't exist
 
-def process_file(input_file_path, input_folder, output_folder):
+def process_file(input_file_path, input_folder, output_folder, mode="melspectrogram"):
     try:
         # Create the equivalent output path
         relative_path = os.path.relpath(os.path.dirname(input_file_path), input_folder)
@@ -14,10 +19,24 @@ def process_file(input_file_path, input_folder, output_folder):
         os.makedirs(output_dir, exist_ok=True)
 
         # Generate Mel spectrogram and save
-        mel_spec = melspectrogram(input_file_path)
-        if mel_spec is not None:
+        if mode == "melspectrogram":
+            spec = melspectrogram(input_file_path)
+        elif mode == "gammatonegram":
+            spec = gammatonegram(input_file_path)
+        elif mode == "mfcc":
+            spec = extract_mfcc_1d(input_file_path)
+        elif mode == "stft":
+            spec = stft_features(input_file_path)
+        elif mode == "wst":
+            spec = wst_features(input_file_path)
+        elif mode == "cqt":
+            spec = cqt_features(input_file_path)
+        else:
+            raise ValueError(f"Unsupported mode: {mode}")
+
+        if spec is not None:
             output_file_path = os.path.join(output_dir, os.path.basename(input_file_path).replace('.wav', '.npy'))
-            np.save(output_file_path, mel_spec)
+            np.save(output_file_path, spec)
             print(f"Saved Mel spectrogram: {output_file_path}")
     except Exception as e:
         print(f"Failed to process {input_file_path}: {e}")
